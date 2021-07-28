@@ -1,0 +1,117 @@
+<app-card [title]="'Users Management'">
+    <div>
+        <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>role</th>
+                <th> Action </th>
+              </tr>
+              </thead>
+              <tbody>
+
+              <tr *ngFor="let user of users">
+                <th scope="row">{{ user._id }}</th>
+                <td>{{ user.name }}</td>
+                <td>{{ user.surname }}</td>
+                <td>{{ user.phone }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>
+                     <button type="button" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="updateUser(user)">update</button>
+                     <button type="button" class="btn btn-danger btn-round"  placement="bottom" [ngbPopover]="successContent">delete</button>
+                    </td>
+              </tr>
+              
+              </tbody>
+            </table>
+          </div>
+    </div>
+</app-card>
+
+
+<app-modal-basic #Modal >
+    <div class="app-modal-header">
+         <h4>{{ text }}</h4> 
+    </div>
+    <div class="app-modal-body">  
+
+        <ng-template [ngIf]="update">
+            <form [formGroup]="userForm">
+
+            
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="Name"  [formControlName]="'name'" value="{{userForm.value.name}}">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="SurName" [formControlName]="'surname'" value="{{userForm.value.surname}}">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control form-control-normal" placeholder="password" [formControlName]="'password'" value="{{userForm.value.password}}">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="Company id" [formControlName]="'companyId'" value="{{userForm.value.companyId}}">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control form-control-normal" placeholder="Email" [formControlName]="'email'" value="{{userForm.value.email}}">
+                </div>
+                <div class="form-group">
+                    <input type="phone" class="form-control form-control-normal" placeholder="Phone" [formControlName]="'phone'" value="{{userForm.value.phone}}">
+                </div>
+                <div class="form-group">
+                    <select class="form-control form-control-normal" formControlName="role">
+                        
+                        <option value="costumer" [selected] = "user.role === 'costumer'">Costumer</option>
+                        <option value="admin" [selected] = "user.role === 'admin'">Admin</option>
+                        <option value="delivery" [selected] = "user.role === 'delivery'">Delivery</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="onUpdate()" >update</button>
+                </div>
+                
+            </form>
+        </ng-template>
+        
+        <ng-template [ngIf]="!update">
+            <form [formGroup]="userForm">
+
+            
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="Name"  formControlName="name" >
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="SurName" formControlName="surname" >
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control form-control-normal" placeholder="password" formControlName="password" >
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="Company id" formControlName="companyId" >
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control form-control-normal" placeholder="Email" formControlName="email" >
+                </div>
+                <div class="form-group">
+                    <input type="phone" class="form-control form-control-normal" placeholder="Phone" formControlName="phone" >
+                </div>
+                <div class="form-group">
+                    <select class="form-control form-control-normal" formControlName="role">
+                        
+                        <option value="costumer">Costumer</option>
+                        <option value="admin">Admin</option>
+                        <option value="delivery">Delivery</option>
+                    </select>
+                </div>
+            </form>
+        </ng-template>
+        
+    </div>
+    <div class="app-modal-footer"></div>
+</app-modal-basic>
