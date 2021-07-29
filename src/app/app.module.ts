@@ -12,7 +12,7 @@ import {SharedModule} from './shared/shared.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { GraphQLModule } from './graphql.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AuthInterceptorService } from './auth-interceptor.service';
 import { AuthService } from "./auth.service";
 import { UserModule } from './user/user.module'
@@ -33,6 +33,7 @@ import { UserModule } from './user/user.module'
     GraphQLModule,
     HttpClientModule,
     ReactiveFormsModule,
+    FormsModule,
     UserModule
   ],
   schemas: [ NO_ERRORS_SCHEMA ],

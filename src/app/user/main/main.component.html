@@ -42,26 +42,23 @@
     <div class="app-modal-body">  
 
         <ng-template [ngIf]="update">
-            <form [formGroup]="userForm">
+            <form [formGroup]="userForm" (ngSubmit)="onUpdate()">
 
             
                 <div class="form-group">
-                    <input type="text" class="form-control form-control-normal" placeholder="Name"  [formControlName]="'name'" value="{{userForm.value.name}}">
+                    <input type="text" class="form-control form-control-normal" placeholder="Name"  formControlName="name" >
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control form-control-normal" placeholder="SurName" [formControlName]="'surname'" value="{{userForm.value.surname}}">
+                    <input type="text" class="form-control form-control-normal" placeholder="SurName" formControlName="surname" >
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control form-control-normal" placeholder="password" [formControlName]="'password'" value="{{userForm.value.password}}">
+                    <input type="text" class="form-control form-control-normal" placeholder="Company id" formControlName="companyId" >
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control form-control-normal" placeholder="Company id" [formControlName]="'companyId'" value="{{userForm.value.companyId}}">
+                    <input type="email" class="form-control form-control-normal" placeholder="Email" formControlName="email">
                 </div>
                 <div class="form-group">
-                    <input type="email" class="form-control form-control-normal" placeholder="Email" [formControlName]="'email'" value="{{userForm.value.email}}">
-                </div>
-                <div class="form-group">
-                    <input type="phone" class="form-control form-control-normal" placeholder="Phone" [formControlName]="'phone'" value="{{userForm.value.phone}}">
+                    <input type="phone" class="form-control form-control-normal" placeholder="Phone" formControlName="phone">
                 </div>
                 <div class="form-group">
                     <select class="form-control form-control-normal" formControlName="role">
@@ -73,7 +70,7 @@
                 </div>
 
                 <div class="form-group">
-                    <button type="button" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="onUpdate()" >update</button>
+                    <button type="submit" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent"  >update</button>
                 </div>
                 
             </form>
