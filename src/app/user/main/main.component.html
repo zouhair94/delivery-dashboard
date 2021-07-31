@@ -1,4 +1,9 @@
 <app-card [title]="'Users Management'">
+    
+    <div class="form-group">
+        <button type="button" class="btn btn-success btn-round"  placement="bottom" (click)="addUser()">Add new User</button>
+    </div>
+
     <div>
         <div class="table-responsive">
             <table class="table table-hover">
@@ -9,6 +14,7 @@
                 <th>Last Name</th>
                 <th>Phone</th>
                 <th>Email</th>
+                <th>Credit</th>
                 <th>role</th>
                 <th> Action </th>
               </tr>
@@ -21,10 +27,11 @@
                 <td>{{ user.surname }}</td>
                 <td>{{ user.phone }}</td>
                 <td>{{ user.email }}</td>
+                <td>{{ user.credit }}</td>
                 <td>{{ user.role }}</td>
                 <td>
                      <button type="button" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="updateUser(user)">update</button>
-                     <button type="button" class="btn btn-danger btn-round"  placement="bottom" [ngbPopover]="successContent">delete</button>
+                     <button type="button" class="btn btn-danger btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="deleteUser(user._id)">delete</button>
                     </td>
               </tr>
               
@@ -49,7 +56,7 @@
                     <input type="text" class="form-control form-control-normal" placeholder="Name"  formControlName="name" >
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control form-control-normal" placeholder="SurName" formControlName="surname" >
+                    <input type="text" class="form-control form-control-normal" placeholder="Surname" formControlName="surname" >
                 </div>
                 <div class="form-group">
                     <input type="text" class="form-control form-control-normal" placeholder="Company id" formControlName="companyId" >
@@ -59,6 +66,9 @@
                 </div>
                 <div class="form-group">
                     <input type="phone" class="form-control form-control-normal" placeholder="Phone" formControlName="phone">
+                </div>
+                <div class="form-group">
+                    <input type="number" class="form-control form-control-normal" placeholder="credit" formControlName="credit" >
                 </div>
                 <div class="form-group">
                     <select class="form-control form-control-normal" formControlName="role">
@@ -77,38 +87,43 @@
         </ng-template>
         
         <ng-template [ngIf]="!update">
-            <form [formGroup]="userForm">
-
-            
+            <div *ngIf="!userForm.valid && !userForm.pristine && userForm.touched" style="border: 1px solid red; padding: 10px; margin: 5px; color: red; font-weight: bold;">Please Fill All Fields.</div>
+            <form [formGroup]="userForm" (ngSubmit)="createUser()">
                 <div class="form-group">
-                    <input type="text" class="form-control form-control-normal" placeholder="Name"  formControlName="name" >
+                    <input type="text" class="form-control form-control-normal" placeholder="Name"  formControlName="name" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control form-control-normal" placeholder="SurName" formControlName="surname" >
+                    <input type="text" class="form-control form-control-normal" placeholder="Surname" formControlName="surname" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control form-control-normal" placeholder="password" formControlName="password" >
+                    <input type="password" class="form-control form-control-normal" placeholder="password" formControlName="password" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control form-control-normal" placeholder="Company id" formControlName="companyId" >
+                    <input type="text" class="form-control form-control-normal" placeholder="Company id" formControlName="companyId" required>
                 </div>
                 <div class="form-group">
-                    <input type="email" class="form-control form-control-normal" placeholder="Email" formControlName="email" >
+                    <input type="email" class="form-control form-control-normal" placeholder="Email" formControlName="email" required>
                 </div>
                 <div class="form-group">
-                    <input type="phone" class="form-control form-control-normal" placeholder="Phone" formControlName="phone" >
+                    <input type="phone" class="form-control form-control-normal" placeholder="Phone" formControlName="phone" required>
                 </div>
+                
                 <div class="form-group">
-                    <select class="form-control form-control-normal" formControlName="role">
+                    <select class="form-control form-control-normal" placeholder="Role" formControlName="role" required>
                         
-                        <option value="costumer">Costumer</option>
+                        <option value="costumer" >Costumer</option>
                         <option value="admin">Admin</option>
                         <option value="delivery">Delivery</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent"  >Create</button>
                 </div>
             </form>
         </ng-template>
         
     </div>
     <div class="app-modal-footer"></div>
+    
 </app-modal-basic>
+

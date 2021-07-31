@@ -16,6 +16,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AuthInterceptorService } from './auth-interceptor.service';
 import { AuthService } from "./auth.service";
 import { UserModule } from './user/user.module'
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { UserModule } from './user/user.module'
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    UserModule
+    UserModule,
+    LeafletModule
   ],
   schemas: [ NO_ERRORS_SCHEMA ],
   providers: [AuthService,

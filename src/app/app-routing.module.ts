@@ -46,6 +46,10 @@ const routes: Routes = [
         path: 'users',
         loadChildren: () => import('./user/user.module').then(m => m.UserModule ),
         canActivate: [ExpenseGuard]
+      }, {
+        path: 'address',
+        loadChildren: () => import('./address/address.module').then(m => m.AddressModule ),
+        canActivate: [ExpenseGuard]
       }
       /* { path: '**', redirectTo: '' } */
     ]

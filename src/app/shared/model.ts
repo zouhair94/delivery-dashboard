@@ -30,9 +30,23 @@ type UpdateUserDto = {
     phone: String
     role: String
     companyId: String
+    credit: Number
     };
+type InputUserDto = {
+name: String
+surname: String
+email: String
+password: String
+phone: String
+role: String
+companyId: String
+credit: Number
+token: String
+createdAt: String
+}
 
 export type Variables = {
-    id: String
-    data: UpdateUserDto
+    id?: String
+    data?: UpdateUserDto,
+    InputUserDto?: InputUserDto
 }

@@ -26,6 +26,7 @@
               "node_modules/font-awesome-scss/scss/font-awesome.scss",
               "node_modules/ti-icons/css/themify-icons.css",
               "src/assets/icon/icofont/css/icofont.scss",
+              "node_modules/leaflet/dist/leaflet.css",
               "src/styles.scss"
             ],
             "scripts": [

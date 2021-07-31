@@ -1,0 +1,88 @@
+<app-card [title]="'Address Management'">
+
+
+    <div>
+        <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>address</th>
+                <th>by</th>
+                <th> Action </th>
+              </tr>
+              </thead>
+              <tbody>
+
+              <tr *ngFor="let address of addresses">
+                <th scope="row">{{ address._id }}</th>
+                <td>{{ address.title }}</td>
+                <td>{{ address.address }}</td>
+                <td>{{ address.by.name }} {{ address.by.surname }}</td>
+            
+                <td>
+                     <button type="button" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="updateAddress(address)">update</button>
+                     <button type="button" class="btn btn-danger btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="deleteAddress(user._id)">delete</button>
+                    </td>
+              </tr>
+              
+              </tbody>
+            </table>
+          </div>
+    </div>
+</app-card>
+
+
+<app-modal-basic #Modal >
+    <div class="app-modal-header">
+         <h4>{{ text }}</h4> 
+    </div>
+    <div class="app-modal-body">  
+
+                <div
+                     class="map-container"
+                     leaflet
+                    [leafletOptions]="options"
+                    (leafletMapReady)="onMapReady($event)"
+                    (leafletMapZoomEnd)="onMapZoomEnd($event)"
+                    style="
+                        width:100%;
+                        height:200px;
+                        "
+
+                ></div>
+
+            
+            <form [formGroup]="addressForm" (ngSubmit)="onUpdate()">
+
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="Title"  formControlName="title" >
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="Address" formControlName="address" >
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-normal" placeholder="Lat" formControlName="lat" >
+                </div>
+
+                <div class="form-group">
+                    <input type="email" class="form-control form-control-normal" placeholder="Lng" formControlName="lng">
+                </div>
+                
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-round"  placement="bottom"  >update</button>
+                </div>
+                
+            </form>
+       
+        
+        
+        
+    </div>
+    <div class="app-modal-footer"></div>
+    
+</app-modal-basic>
