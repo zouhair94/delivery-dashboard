@@ -8,12 +8,19 @@ import { AuthService } from './auth.service';
 })
 export class ExpenseGuard implements CanActivate {
   constructor(private router: Router, private loginServ: AuthService){}
-  canActivate(){
-    console.log(this.router.routerState.snapshot)
-    if (!this.loginServ.gettoken()) {  
+   isLogged = false;
+   canActivate(){
+    
+    this.loginServ.verifyToken();
+
+     if (!this.loginServ.gettoken()) {  
       this.router.navigateByUrl("/authentication/login");  
-  }  
+    }
+      
     return this.loginServ.gettoken();
+      
+
+    
   }
   
 }

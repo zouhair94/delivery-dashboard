@@ -23,7 +23,7 @@
             
                 <td>
                      <button type="button" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="updateAddress(address)">update</button>
-                     <button type="button" class="btn btn-danger btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="deleteAddress(user._id)">delete</button>
+                     <button type="button" class="btn btn-danger btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="deleteAddress(address._id)">delete</button>
                     </td>
               </tr>
               
@@ -49,6 +49,7 @@
                     style="
                         width:100%;
                         height:200px;
+                        margin-bottom: 20px;
                         "
 
                 ></div>
@@ -69,12 +70,13 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="email" class="form-control form-control-normal" placeholder="Lng" formControlName="lng">
+                    <input type="text" class="form-control form-control-normal" placeholder="Lng" formControlName="lng">
                 </div>
                 
 
                 <div class="form-group">
                     <button type="submit" class="btn btn-success btn-round"  placement="bottom"  >update</button>
+                    <button type="button" class="btn btn-primary btn-round"  placement="bottom"  (click)="checkAddress()">check address</button>
                 </div>
                 
             </form>
@@ -86,3 +88,5 @@
     <div class="app-modal-footer"></div>
     
 </app-modal-basic>
+
+<ng2-toasty [position]="position"></ng2-toasty>

@@ -4,6 +4,10 @@
         <button type="button" class="btn btn-success btn-round"  placement="bottom" (click)="addUser()">Add new User</button>
     </div>
 
+    <div class="form-group">
+        <input type="text" class="form-control form-control-normal" placeholder="Search by surname"  [(ngModel)]="surname" (ngModelChange)="search($event)">
+    </div>
+
     <div>
         <div class="table-responsive">
             <table class="table table-hover">
@@ -87,7 +91,7 @@
         </ng-template>
         
         <ng-template [ngIf]="!update">
-            <div *ngIf="!userForm.valid && !userForm.pristine && userForm.touched" style="border: 1px solid red; padding: 10px; margin: 5px; color: red; font-weight: bold;">Please Fill All Fields.</div>
+           
             <form [formGroup]="userForm" (ngSubmit)="createUser()">
                 <div class="form-group">
                     <input type="text" class="form-control form-control-normal" placeholder="Name"  formControlName="name" required>
@@ -126,4 +130,6 @@
     <div class="app-modal-footer"></div>
     
 </app-modal-basic>
+
+<ng2-toasty [position]="position"></ng2-toasty>
 

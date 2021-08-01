@@ -5,6 +5,7 @@ import { AddressRouting } from './address-route.module'
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { ToastyModule } from 'ng2-toasty';
 @NgModule({
   declarations: [MainComponent],
   imports: [
@@ -13,7 +14,8 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
     AddressRouting,
     FormsModule, 
     ReactiveFormsModule,
-    LeafletModule
+    LeafletModule,
+    ToastyModule.forRoot()
   ]
 })
 export class AddressModule { }

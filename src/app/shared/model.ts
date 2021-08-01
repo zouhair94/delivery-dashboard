@@ -14,12 +14,23 @@ type User = {
     updatedAt: String
 }
 
+type Adress = {
+    _id: String
+    title: String
+    address: String
+    zipCode: String
+    lat: String
+    lng: String
+    by: User
+    }
+
 
 
 
 
 export type Response = {
     User: User
+    Adress: Adress
 };
 
 
@@ -32,6 +43,7 @@ type UpdateUserDto = {
     companyId: String
     credit: Number
     };
+
 type InputUserDto = {
 name: String
 surname: String
@@ -45,8 +57,16 @@ token: String
 createdAt: String
 }
 
+type UpdateAddress = {
+    title: String
+    address: String
+    lat: String
+    lng: String
+    }
+
 export type Variables = {
     id?: String
-    data?: UpdateUserDto,
+    data?: UpdateUserDto
     InputUserDto?: InputUserDto
+    UpdateAddress?: UpdateAddress
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 import { ModalBasicComponent } from '../../shared/modal-basic/modal-basic.component'
@@ -10,14 +10,23 @@ import { ToastData, ToastOptions, ToastyService } from 'ng2-toasty';
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss']
+  styleUrls: [
+    './main.component.scss',
+    '../../../../node_modules/ng2-toasty/style-bootstrap.css',
+    '../../../../node_modules/ng2-toasty/style-default.css',
+    '../../../../node_modules/ng2-toasty/style-material.css'
+  ],
+  encapsulation: ViewEncapsulation.None
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnChanges {
 
 
   users: any;
   user: any = {};
 
+  surname;
+
+  //form
   userRule = [
     "_id",
     "name",
@@ -25,6 +34,7 @@ export class MainComponent implements OnInit {
     "email",
     "phone",
     "role",
+    "credit",
     "companyId"]
 
   @ViewChild(ModalBasicComponent) modal;
@@ -41,7 +51,7 @@ export class MainComponent implements OnInit {
     credit: [''],
   });
 
-
+  //notify
   position = 'bottom-right';
   title: string;
   msg: string;
@@ -57,6 +67,16 @@ export class MainComponent implements OnInit {
     private fb: FormBuilder,
     private toastyService: ToastyService
   ) { }
+
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes) {
+      console.log(changes.surname)
+    }
+
+  }
+
+
 
   ngOnInit(): void {
     this.getUsers();
@@ -85,9 +105,11 @@ export class MainComponent implements OnInit {
       onAdd: (toast: ToastData) => {
         /* added */
         console.log('Toast  has been added!');
+
       },
       onRemove: (toast: ToastData) => {
         /* removed */
+        console.log('deleted!');
       }
     };
 
@@ -101,11 +123,12 @@ export class MainComponent implements OnInit {
     }
   }
 
-  getUsers() {
+  getUsers(surname?) {
     this.apollo.watchQuery({
+      fetchPolicy: 'no-cache',
       query: gql`
-          query find{
-                findAllUser{
+          query findAllUser($surname: String){
+                findAllUser(surname: $surname){
                   _id
                   name
                   surname
@@ -115,15 +138,21 @@ export class MainComponent implements OnInit {
                   credit
                 }}
       `,
-      pollInterval: 500,
+      //pollInterval: 1000,
       variables: {
-
+        surname
       }
     }).valueChanges.subscribe(
       (result: any) => {
         this.users = result?.data?.findAllUser;
+        console.log('e')
       }
     )
+  }
+
+
+  search(e) {
+    this.getUsers(e);
   }
 
 
@@ -134,7 +163,6 @@ export class MainComponent implements OnInit {
         this.user[e] = user[e];
       }
     })
-    console.log(this.user)
 
     this.text = `Update User ${user.surname} ${user.name} .`
     this.update = true;
@@ -157,8 +185,6 @@ export class MainComponent implements OnInit {
 
   deleteUser(id) {
 
-
-
     this.apollo.mutate({
       mutation: gql`
         
@@ -172,9 +198,18 @@ export class MainComponent implements OnInit {
       variables: {
         id
       }
-    }).subscribe(async (result: any) => {
-
-      await this.getUsers();
+    }).subscribe(
+      (result: any) => {
+        // console.log(id);
+        this.getUsers();
+        this.addToast({
+          title: 'Done',
+          msg: 'User has been Deleted!',
+          timeout: 5000,
+          theme: 'material',
+          position: 'bottom-right',
+          type: 'success'
+        });
     },
       (err) => console.dir(err)
     );
@@ -206,26 +241,43 @@ export class MainComponent implements OnInit {
         data: this.userForm.value
       }
     }).subscribe(async (result: any) => {
-      console.log('data updated ', result);
+      this.addToast({
+        title: 'Done',
+        msg: 'User has been Updated!',
+        timeout: 5000,
+        theme: 'material',
+        position: 'bottom-right',
+        type: 'success'
+      });
       this.modal.hide();
       this.users = null;
       this.user = {};
       await this.getUsers();
     },
-      (err) => console.dir(err)
+      (err) => {
+        this.addToast({
+          title: 'Error',
+          msg: err.message,
+          timeout: 5000,
+          theme: 'material',
+          position: 'bottom-right',
+          type: 'error'
+        });
+
+      }
     );
   }
 
   addUser() {
-    //this.addToast({title:'Default Toasty', msg:'Turning standard Bootstrap alerts into awesome notifications', timeout: 5000, theme:'default', position:'bottom-right', type:'error'});
-      this.text = `Add new User .`
-      this.user = {};
-      this.update = false;
-      this.modal.show();
+
+    this.text = `Add new User .`
+    this.user = {};
+    this.update = false;
+    this.modal.show();
   }
 
   async createUser() {
-    console.dir(this.userForm)
+
     const data = this.userForm.value;
     delete data.credit;
     if (this.userForm.valid) {
@@ -250,16 +302,40 @@ export class MainComponent implements OnInit {
           InputUserDto: data
         }
       }).subscribe(async (result: any) => {
-        console.log('data updated ', result);
+
         this.modal.hide();
         this.users = null;
         this.user = {};
+        this.addToast({
+          title: 'Done',
+          msg: 'User has been created!',
+          timeout: 5000,
+          theme: 'material',
+          position: 'bottom-right',
+          type: 'success'
+        });
         await this.getUsers();
       },
         (err) => {
-          this.addToast({ title: 'missed data', msg: 'check if all data is inserted!', timeout: 5000, theme: 'material', position: 'bottom-right', type: 'error' })
+          this.addToast({
+            title: 'Error While adding new User',
+            msg: err.message,
+            timeout: 5000,
+            theme: 'material',
+            position: 'bottom-right',
+            type: 'error'
+          });
         }
       );
+    } else {
+      this.addToast({
+        title: 'Error',
+        msg: 'please check all fields.',
+        timeout: 5000,
+        theme: 'material',
+        position: 'bottom-right',
+        type: 'error'
+      });
     }
 
 

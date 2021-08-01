@@ -12,7 +12,7 @@ export class AuthService {
     private apollo: Apollo,
     private route: ActivatedRoute,
     private router: Router
-    ) { }
+  ) { }
 
   login(email: string, password: string) {
 
@@ -28,18 +28,50 @@ export class AuthService {
         email,
         password
       }
-    }).subscribe((result: any)=>{
-      localStorage.setItem('isUserLoggedIn',`Bearer ${result.data.login}`);
-      
+    }).subscribe((result: any) => {
+      localStorage.setItem('isUserLoggedIn', `Bearer ${result.data.login}`);
+
       this.router.navigate(['/']);
-     
+
     });
 
   }
 
-  gettoken(){  
-    return !!localStorage.getItem("isUserLoggedIn");  
-    }  
+
+  gettoken() {
+    return !!localStorage.getItem("isUserLoggedIn");
+  }
+
+  verifyToken() {
+    const token = localStorage.getItem("isUserLoggedIn");
+    if (token) {
+      const helper = new JwtHelperService();
+      const { _id: id } = helper.decodeToken(token);
+      return this.apollo.watchQuery({
+        query: gql`
+            query findUser($id: String!) {
+                findUser(id: $id) {
+                  _id 
+                }
+            }
+        `,
+        variables: {
+          id
+        }
+      }).valueChanges.subscribe(
+        (res) => {
+
+        },
+        (err) => {
+          if (err.message === 'Unauthorized') {
+            localStorage.removeItem('isUserLoggedIn');
+            this.router.navigateByUrl("/authentication/login");
+          }
+        });
+    }
+
+
+  }
 
   getUserId() {
     const token = localStorage.getItem("isUserLoggedIn");
@@ -47,7 +79,7 @@ export class AuthService {
     return helper.decodeToken(token);
   }
 
-  logout(){
+  logout() {
     localStorage.removeItem('isUserLoggedIn');
   }
 }

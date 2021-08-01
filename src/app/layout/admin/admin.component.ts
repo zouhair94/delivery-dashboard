@@ -305,9 +305,12 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   getUserName() {
     
-    const { _id: id } = this.auth.getUserId();
+    const userData = this.auth.getUserId();
+    if(!userData) return null;
+    const { _id: id } = userData;
 
     const query = this.apollo.watchQuery({
+      fetchPolicy: 'no-cache',
       query: gql`
         query findUser($id: String!){
           findUser(id: $id){
@@ -326,8 +329,9 @@ export class AdminComponent implements OnInit, OnDestroy {
         
         this.user = result?.data?.findUser;
         this.loading = false;
-        console.log(this.user)
-      });
+        //console.log(this.user)
+      },
+      error => console.log(error));
 
     this.subscriptions.push(query);
 
