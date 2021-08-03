@@ -6,6 +6,7 @@ import { ToastData, ToastOptions, ToastyService } from 'ng2-toasty';
 import { ModalBasicComponent } from '../../shared/modal-basic/modal-basic.component'
 import { Title } from "@angular/platform-browser";
 import { Variables, Response } from '../../../app/shared/model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-main',
@@ -57,7 +58,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-
+    this.subscriptions.forEach((e: Subscription) => e.unsubscribe());
   }
 
 
