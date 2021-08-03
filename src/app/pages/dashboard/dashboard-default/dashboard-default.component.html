@@ -7,7 +7,7 @@
         <span class="text-c-blue f-w-600">This Months Orders</span>
         <h4>{{lastMonthTotal}}</h4>
         <div>
-        
+
         </div>
       </div>
     </div>
@@ -45,11 +45,14 @@
 
   <!-- Statistics Start -->
   <div class="col-md-12 col-xl-12">
-    <app-card [title]="'Statistics'" [classHeader]="true">
-      <span class="code-header"><span class="text-muted">last 12 months statistics.</span></span>
-      <div id="line-example" class="line-example">
-        <div id="statistics-chart" style="height:300px;"></div>
-      </div>
+    <app-card [title]="'Last Month HeatMap'" [classHeader]="true">
+      <span class="code-header"><span class="text-muted">last month most called places.</span></span>
+      <div class="map-container" leaflet [leafletOptions]="options" (leafletMapReady)="onMapReady($event)"
+        (leafletMapZoomEnd)="onMapZoomEnd($event)" style="
+         width:100%;
+         height:500px;
+         margin-bottom: 20px;
+         "></div>
     </app-card>
   </div>
 

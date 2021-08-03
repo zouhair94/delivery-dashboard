@@ -1,0 +1,101 @@
+<app-card [title]="'Order Management'">
+
+    <div class="form-group">
+        <input type="text" class="form-control form-control-normal" placeholder="Search by surname"  [(ngModel)]="surname" (ngModelChange)="search($event)">
+    </div>
+    
+    <div>
+        <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>from</th>
+                <th>to</th>
+                <th>status</th>
+                <th>by</th>
+                <th> Created At </th>
+                <th> Action </th>
+              </tr>
+              </thead>
+              <tbody>
+
+              <tr *ngFor="let order of orders" 
+              [ngClass]="{
+                'table-danger': order.status === 'inactive',
+                'table-warning': order.status === 'pending',
+                'table-success': order.status === 'delivered'
+              }"
+              >
+                    <th scope="row">{{ order._id }}</th>
+                    <td>{{ order.title }}</td>
+                    <td>{{ order.from.address }}</td>
+                    <td>{{ order.to.address }}</td>
+                    <td>{{ order.status }} </td>
+                    <td>{{ order.by.name }} {{ order.by.surname }}</td>
+                    <td>{{ order.createdAt | date }}</td>
+                    
+                
+                    <td>
+                        <button type="button" class="btn btn-success btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="updateOrder(order)">update</button>
+                        <button type="button" class="btn btn-danger btn-round"  placement="bottom" [ngbPopover]="successContent" (click)="deleteOrder(order._id)">delete</button>
+                    </td>
+              </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="align-items: center;" *ngIf="ordersLength >= 10 "><a (click)="getMore()">Get More!</a></td>
+                <td></td>               
+                <td></td>
+                <td></td>
+                <td></td>
+                
+            </tr>
+              </tbody>
+            </table>
+             
+          </div>
+    </div>
+</app-card>
+
+
+<app-modal-basic #Modal >
+    <div class="app-modal-header">
+         <h4>{{ text }}</h4> 
+    </div>
+    <div class="app-modal-body">  
+            
+            <form [formGroup]="orderForm" (ngSubmit)="onUpdate()">
+
+                <div class="form-group">
+                    <select class="form-control form-control-normal" placeholder="deliver" formControlName="delivery" required>  
+                        <option [ngValue]="null" disabled >Choose a Delivery man!</option>
+                        <option *ngFor="let item of delivery" [ngValue]="item._id" > {{item.name}} {{item.surname}} </option>
+                        
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <select class="form-control form-control-normal" placeholder="Status" formControlName="status" required>  
+                        <option value="inactive" [selected] = "order.status === 'inactive'">Inactive</option>
+                        <option value="pending" [selected] = "order.status === 'pending'">Pending</option>
+                        <option value="delivered" [selected] = "order.status === 'delivered'">Delivered</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success btn-round"  placement="bottom"  >update</button>
+                    
+                </div>
+            </form>
+       
+        
+        
+        
+    </div>
+    <div class="app-modal-footer"></div>
+    
+</app-modal-basic>
+
+<ng2-toasty [position]="position"></ng2-toasty>

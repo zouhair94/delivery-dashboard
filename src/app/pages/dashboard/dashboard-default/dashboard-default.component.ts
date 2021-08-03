@@ -1,32 +1,57 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 
-import '../../../../assets/charts/amchart/amcharts.js';
-import '../../../../assets/charts/amchart/gauge.js';
-import '../../../../assets/charts/amchart/pie.js';
-import '../../../../assets/charts/amchart/serial.js';
-import '../../../../assets/charts/amchart/light.js';
-import '../../../../assets/charts/amchart/ammap.js';
-import '../../../../assets/charts/amchart/worldLow.js';
 import { Observable } from '@apollo/client/utilities';
 import { Subscription } from 'rxjs';
 
-declare const AmCharts: any;
-declare const $: any;
+//import * as L from 'leaflet'
+import { MapOptions, tileLayer, ZoomAnimEvent } from 'leaflet';
+import { latLng } from 'leaflet';
 
+import 'leaflet.heat/dist/leaflet-heat.js'
+
+
+
+declare const L;
+// declare const HeatmapOverlay;
 @Component({
   selector: 'app-dashboard-default',
   templateUrl: './dashboard-default.component.html',
   styleUrls: [
     './dashboard-default.component.scss',
-    '../../../../assets/icon/svg-animated/svg-weather.css'
   ]
 })
 export class DashboardDefaultComponent implements OnInit, OnDestroy {
 
-  totalValueGraphData1 = buildChartJS('#fff', [45, 25, 35, 20, 45, 20, 40, 10, 30, 45], '#3a73f1', 'transparent');
-  totalValueGraphData2 = buildChartJS('#fff', [10, 25, 35, 20, 10, 20, 15, 45, 15, 10], '#e55571', 'transparent');
-  totalValueGraphOption = buildChartOption();
+
+  orders;
+  
+  /* heatmapLayer = new HeatmapOverlay({
+    radius: 2,
+    maxOpacity: 0.8,
+    scaleRadius: true,
+    useLocalExtrema: true,
+    latField: 'lat',
+    lngField: 'lng',
+    valueField: 'count'
+  }); */
+
+  options: MapOptions= {
+    layers:[tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      opacity: 0.5,
+      maxZoom: 24,
+      detectRetina: true,
+      attribution: ''
+    })],
+    zoom:19,
+    center:latLng(33.58368306601847, -7.636966872068143)
+  };
+  map;
+  zoom = 17;
+  
+  skip=0;
+
+  
 
   subscriptions = [];
   lastMonthTotal;
@@ -40,59 +65,78 @@ export class DashboardDefaultComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
 
+    this.getOrders();
+
     const getDate = new Date();
     getDate.setMonth(getDate.getMonth() - 1);
 
     this.getTotalBYMonth(getDate);
     this.totalUsers();
     this.totalAdresses();
-    const year = await this.getYearTotal();
-    const data = year.data.map((e,i)=>({ year: year.months[i] ,value: e}));
-    AmCharts.makeChart('statistics-chart', {
-      type: 'serial',
-      marginTop: 0,
-
-      marginRight: 0,
-      dataProvider: [...data],
-      valueAxes: [{
-        axisAlpha: 0,
-        dashLength: 6,
-        gridAlpha: 0.1,
-        position: 'left'
-      }],
-      graphs: [{
-        id: 'g1',
-        bullet: 'round',
-        bulletSize: 9,
-        lineColor: '#4680ff',
-        lineThickness: 2,
-        negativeLineColor: '#4680ff',
-        type: 'smoothedLine',
-        valueField: 'value'
-      }],
-      chartCursor: {
-        cursorAlpha: 0,
-        valueLineEnabled: false,
-        valueLineBalloonEnabled: true,
-        valueLineAlpha: false,
-        color: '#fff',
-        cursorColor: '#FC6180',
-        fullWidth: true
-      },
-      categoryField: 'year',
-      categoryAxis: {
-        gridAlpha: 0,
-        axisAlpha: 0,
-        fillAlpha: 1,
-        fillColor: '#FAFAFA',
-        minorGridAlpha: 0,
-        minorGridEnabled: true
-      },
-      'export': {
-        enabled: true
-      }
-    });
    
+   
+  }
+
+
+  onMapReady(map) {
+
+    this.map = map;
+
+    const myIcon = L.divIcon({className: 'ti-location-pin '});
+    
+    L.marker([33.58368306601847, -7.636966872068143],{icon: myIcon}).addTo(this.map);
+    
+    
+    this.zoom = map.getZoom();
+
+    
+
+    //const heat = L.heatLayer(orders).addTo(this.map)
+    
+
+  }
+
+  onMapZoomEnd(e: ZoomAnimEvent) {
+    this.zoom = e.target.getZoom();
+    
+  }
+
+  getOrders(surname?,skip?) {
+    this.apollo
+        .watchQuery({
+          query: gql`
+              query getAllOrders($surname: String) {
+                getAllOrders(surname: $surname){
+                    
+                    from {
+                      lat
+                      lng
+                    }
+                    
+                }
+              }
+          `,
+          variables: {
+            surname,
+            skip
+          }
+        })
+        .valueChanges
+        .subscribe(
+          (res:any) => {
+              this.orders = res.data?.getAllOrders;
+
+              const orders = this.orders.map( e => e.from );
+              const heat = L.heatLayer(orders,{minOpacity: 0.5 }).addTo(this.map);
+
+          },
+          err => console.log(err)
+        )
+  }
+
+  getMore() {
+    this.skip += 10;
+    this.getOrders(null,this.skip);
   }
 
   
@@ -120,50 +164,6 @@ export class DashboardDefaultComponent implements OnInit, OnDestroy {
     this.subscriptions.push(query);
   }
 
-  getTotalByMonthAsync(date) {
-    return new Promise((res, rej) => {
-      this.apollo.watchQuery({
-        query: gql`
-        query getMonthCountAsync($date: String!){
-        getMonthCount(date: $date)
-      }
-      `,
-        variables: {
-          date
-        }
-      }).valueChanges
-        .subscribe((result: any) => {
-          res(result.data.getMonthCount)
-        },
-          err => {
-            rej(err);
-          }
-        );
-    })
-  }
-
-  async getYearTotal() {
-
-    const getDate = new Date();
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  
-    const total = [];
-    const months = [];
-
-    for (let i = 1; i < 13; i++) {
-      getDate.setMonth(getDate.getMonth() - i);
-      months.push(monthNames[getDate.getMonth()]);
-      total.push(await this.getTotalByMonthAsync(getDate));
-    }
-
-
-     const data =  await Promise.all([...total]);
-
-    return {months, data};
-
-  }
 
   async totalUsers() {
     const query = this.apollo.watchQuery({
@@ -201,94 +201,9 @@ export class DashboardDefaultComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(query);
   }
+  
 
 }
 
 
 
-function buildChartJS(a, b, f, c) {
-  if (f == null) {
-    f = 'rgba(0,0,0,0)';
-  }
-  return {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October'],
-    datasets: [{
-      label: '',
-      borderColor: a,
-      borderWidth: 2,
-      hitRadius: 30,
-      pointHoverRadius: 4,
-      pointBorderWidth: 50,
-      pointHoverBorderWidth: 12,
-      pointBackgroundColor: c,
-      pointBorderColor: 'transparent',
-      pointHoverBackgroundColor: a,
-      pointHoverBorderColor: 'rgba(0,0,0,0.5)',
-      fill: true,
-      backgroundColor: f,
-      data: b,
-    }]
-  };
-}
-
-function buildChartOption() {
-  return {
-    title: {
-      display: false
-    },
-    tooltips: {
-      enabled: true,
-      intersect: false,
-      mode: 'nearest',
-      xPadding: 10,
-      yPadding: 10,
-      caretPadding: 10
-    },
-    legend: {
-      display: false,
-      labels: {
-        usePointStyle: false
-      }
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-    hover: {
-      mode: 'index'
-    },
-    scales: {
-      xAxes: [{
-        display: false,
-        gridLines: false,
-        scaleLabel: {
-          display: true,
-          labelString: 'Month'
-        }
-      }],
-      yAxes: [{
-        display: false,
-        gridLines: false,
-        scaleLabel: {
-          display: true,
-          labelString: 'Value'
-        },
-        ticks: {
-          beginAtZero: true
-        }
-      }]
-    },
-    elements: {
-      point: {
-        radius: 4,
-        borderWidth: 12
-      }
-    },
-    layout: {
-      padding: {
-        left: 0,
-        right: 0,
-        top: 5,
-        bottom: 0
-      }
-    }
-  };
-}
