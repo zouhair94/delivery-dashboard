@@ -51,7 +51,8 @@ export class AuthService {
         query: gql`
             query findUser($id: String!) {
                 findUser(id: $id) {
-                  _id 
+                  _id
+                  role 
                 }
             }
         `,
@@ -59,7 +60,11 @@ export class AuthService {
           id
         }
       }).valueChanges.subscribe(
-        (res) => {
+        (res: any) => {
+          if(res.data?.findUser.role !== 'admin') {
+            localStorage.removeItem('isUserLoggedIn');
+            this.router.navigateByUrl("/authentication/login");
+          }
 
         },
         (err) => {

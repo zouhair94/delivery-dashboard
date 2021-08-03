@@ -1,5 +1,5 @@
 import { Component, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 import { ModalBasicComponent } from '../../shared/modal-basic/modal-basic.component'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -65,7 +65,8 @@ export class MainComponent implements OnInit, OnChanges {
     private apollo: Apollo,
     private route: ActivatedRoute,
     private fb: FormBuilder,
-    private toastyService: ToastyService
+    private toastyService: ToastyService,
+    private router: Router
   ) { }
 
 
@@ -145,7 +146,16 @@ export class MainComponent implements OnInit, OnChanges {
     }).valueChanges.subscribe(
       (result: any) => {
         this.users = result?.data?.findAllUser;
-        console.log('e')
+      },
+      (err) => {
+        this.addToast({
+          title: 'Error',
+          msg: err.message,
+          timeout: 5000,
+          theme: 'material',
+          position: 'bottom-right',
+          type: 'error'
+        })
       }
     )
   }

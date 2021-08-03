@@ -18,7 +18,7 @@ import { ToastyModule } from 'ng2-toasty';
     SharedModule,
     ReactiveFormsModule,
     FormsModule,
-    ToastyModule
+    ToastyModule.forRoot()
   ]
 })
 export class OrderModule { }

@@ -1,9 +1,10 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {animate, AUTO_STYLE, state, style, transition, trigger} from '@angular/animations';
-import {MenuItems} from '../../shared/menu-items/menu-items';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { animate, AUTO_STYLE, state, style, transition, trigger } from '@angular/animations';
+import { MenuItems } from '../../shared/menu-items/menu-items';
 import { AuthService } from '../../auth.service';
 import { Apollo, gql } from 'apollo-angular';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
@@ -48,12 +49,12 @@ import { Subscription } from 'rxjs';
     ]),
     trigger('fadeInOutTranslate', [
       transition(':enter', [
-        style({opacity: 0}),
-        animate('400ms ease-in-out', style({opacity: 1}))
+        style({ opacity: 0 }),
+        animate('400ms ease-in-out', style({ opacity: 1 }))
       ]),
       transition(':leave', [
-        style({transform: 'translate(0)'}),
-        animate('400ms ease-in-out', style({opacity: 0}))
+        style({ transform: 'translate(0)' }),
+        animate('400ms ease-in-out', style({ opacity: 0 }))
       ])
     ])
   ]
@@ -105,12 +106,13 @@ export class AdminComponent implements OnInit, OnDestroy {
   @ViewChild('searchFriends') search_friends: ElementRef;
 
   public config: any;
-  loading: boolean = true; 
+  loading: boolean = true;
   constructor(
     public menuItems: MenuItems,
     private auth: AuthService,
-    private apollo: Apollo
-    ) {
+    private apollo: Apollo,
+    private router: Router
+  ) {
     this.navType = 'st5';
     this.themeLayout = 'vertical';
     this.vNavigationView = 'view1';
@@ -123,7 +125,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.pcodedSidebarPosition = 'fixed';
     this.headerTheme = 'theme1';
     this.logoTheme = 'theme1';
- 
+
     this.toggleOn = true;
 
     this.headerFixedMargin = '80px';
@@ -243,7 +245,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     let search_input: string;
     let search_parent: any;
     const friendList = document.querySelectorAll('.userlist-box .media-body .chat-header');
-    Array.prototype.forEach.call(friendList, function(elements, index) {
+    Array.prototype.forEach.call(friendList, function (elements, index) {
       search_input = (elements.innerHTML).toLowerCase();
       search_parent = (elements.parentNode).parentNode;
       if (search_input.indexOf(search) !== -1) {
@@ -304,9 +306,9 @@ export class AdminComponent implements OnInit, OnDestroy {
 
 
   getUserName() {
-    
+
     const userData = this.auth.getUserId();
-    if(!userData) return null;
+    if (!userData) return null;
     const { _id: id } = userData;
 
     const query = this.apollo.watchQuery({
@@ -326,15 +328,32 @@ export class AdminComponent implements OnInit, OnDestroy {
       }
     }).valueChanges
       .subscribe((result: any) => {
-        
+
         this.user = result?.data?.findUser;
+        if (this.user.role !== 'admin') {
+
+          localStorage.removeItem('isUserLoggedIn');
+          this.router.navigateByUrl("/authentication/login");
+
+        }
         this.loading = false;
         //console.log(this.user)
       },
-      error => console.log(error));
+        (err) => {
+          if (err.message === 'Unauthorized') {
+            localStorage.removeItem('isUserLoggedIn');
+            this.router.navigateByUrl("/authentication/login");
+          }
+        });
 
     this.subscriptions.push(query);
 
+  }
+
+
+  logout() {
+    localStorage.removeItem('isUserLoggedIn');
+    this.router.navigateByUrl("/authentication/login");
   }
 
 }

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 import { ModalBasicComponent } from '../../shared/modal-basic/modal-basic.component'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -66,6 +66,7 @@ export class MainComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private toastyService: ToastyService,
+    private router: Router
 
   ) { }
 
@@ -136,7 +137,21 @@ export class MainComponent implements OnInit, OnDestroy {
       }
     })
       .valueChanges
-      .subscribe((result: any) => this.addresses = result.data.getAllAdress);
+      .subscribe((result: any) => {
+        this.addresses = result.data.getAllAdress
+      },
+        (err) => {
+
+          this.addToast({
+            title: 'Error',
+            msg: err.message,
+            timeout: 5000,
+            theme: 'material',
+            position: 'bottom-right',
+            type: 'error'
+          })
+        }
+      );
     this.subscriptions.push(query);
   }
 
@@ -223,7 +238,7 @@ export class MainComponent implements OnInit, OnDestroy {
           UpdateAddress: data
         }
       }).subscribe(
-        res => {
+        (res) => {
           this.address = {};
           this.modal.hide();
           this.addToast({
@@ -235,14 +250,16 @@ export class MainComponent implements OnInit, OnDestroy {
             type: 'success'
           });
         },
-        (err) => this.addToast({
-          title: 'Error',
-          msg: err.message,
-          timeout: 5000,
-          theme: 'material',
-          position: 'bottom-right',
-          type: 'error'
-        })
+        (err) => {
+          this.addToast({
+            title: 'Error',
+            msg: err.message,
+            timeout: 5000,
+            theme: 'material',
+            position: 'bottom-right',
+            type: 'error'
+          })
+        }
       )
     this.subscriptions.push(query);
   }

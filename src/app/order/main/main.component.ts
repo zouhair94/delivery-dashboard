@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Apollo, gql } from 'apollo-angular';
 import { ToastData, ToastOptions, ToastyService } from 'ng2-toasty';
 import { ModalBasicComponent } from '../../shared/modal-basic/modal-basic.component'
@@ -20,7 +20,8 @@ export class MainComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private toastyService: ToastyService,
-    private titleService: Title
+    private titleService: Title,
+    private router: Router
   ) { }
 
   subscriptions = [];
@@ -136,7 +137,16 @@ export class MainComponent implements OnInit, OnDestroy {
 
 
         },
-        err => console.log(err)
+        (err) => {
+          this.addToast({
+            title: 'Error',
+            msg: err.message,
+            timeout: 5000,
+            theme: 'material',
+            position: 'bottom-right',
+            type: 'error'
+          })
+        }
       );
 
       this.subscriptions.push(query)
@@ -159,7 +169,6 @@ export class MainComponent implements OnInit, OnDestroy {
     }).valueChanges
       .subscribe(
         (res: any) => {
-          console.log(res.data?.findAllDelivery)
           this.delivery = res.data?.findAllDelivery;
         }
 
@@ -234,6 +243,47 @@ export class MainComponent implements OnInit, OnDestroy {
       );
       this.subscriptions.push(mutate);
 
+  }
+
+  deleteOrder(id) {
+    const query = this.apollo
+    .mutate({
+      mutation: gql`
+        mutation removeOrder($id: String!) {
+          removeOrder(id: $id) {
+            _id
+          }
+        }
+      `,
+      variables: {
+        id
+      }
+    }).subscribe(
+      (res) => {
+        this.skip = 0;
+        this.orders = []
+        this.addToast({
+        title: 'Done',
+        msg: 'Order has been Removed!',
+        timeout: 5000,
+        theme: 'material',
+        position: 'bottom-right',
+        type: 'success'
+      });
+      this.getOrders()
+    },
+    (err) => {
+      this.addToast({
+        title: 'Error',
+        msg: err.message,
+        timeout: 5000,
+        theme: 'material',
+        position: 'bottom-right',
+        type: 'error'
+      })
+    })
+
+    this.subscriptions.push(query);
   }
 
 }
