@@ -17,7 +17,7 @@ pipeline {
 
         stage('deploy') {
             steps {
-                sh 'docker run -d -p 80:80 --network delivery --name delivery-dashboard dashboard'
+                sh 'docker run -d -p 8081:80 --network delivery --name delivery-dashboard dashboard'
             }
             
         }
