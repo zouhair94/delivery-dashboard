@@ -220,7 +220,7 @@ export class MainComponent implements OnInit, OnChanges {
           position: 'bottom-right',
           type: 'success'
         });
-    },
+      },
       (err) => console.dir(err)
     );
   }
