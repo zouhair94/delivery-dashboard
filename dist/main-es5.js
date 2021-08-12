@@ -1759,7 +1759,7 @@
       /*! @angular/core */
       "fXoL");
 
-      var uri = 'http://delivery-api:3000/graphql'; // <-- add the URL of the GraphQL server here
+      var uri = 'http://http://159.65.58.144:3000/graphql'; // <-- add the URL of the GraphQL server here
 
       function createApollo(httpLink) {
         return {

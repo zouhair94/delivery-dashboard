@@ -957,7 +957,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const uri = 'http://delivery-api:3000/graphql'; // <-- add the URL of the GraphQL server here
+const uri = 'http://http://159.65.58.144:3000/graphql'; // <-- add the URL of the GraphQL server here
 function createApollo(httpLink) {
     return {
         link: httpLink.create({ uri }),
